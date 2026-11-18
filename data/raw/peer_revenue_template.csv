@@ -1,0 +1,121 @@
+bank,quarter,business_line,reported_label,revenue_usd_mm,source_url,notes
+GS,2024Q4,FICC,FICC,,,
+GS,2024Q4,Equities,Equities,,,
+GS,2024Q4,IB_Fees,Investment banking fees,,,
+GS,2025Q1,FICC,FICC,,,
+GS,2025Q1,Equities,Equities,,,
+GS,2025Q1,IB_Fees,Investment banking fees,,,
+GS,2025Q2,FICC,FICC,,,
+GS,2025Q2,Equities,Equities,,,
+GS,2025Q2,IB_Fees,Investment banking fees,,,
+GS,2025Q3,FICC,FICC,,,
+GS,2025Q3,Equities,Equities,,,
+GS,2025Q3,IB_Fees,Investment banking fees,,,
+GS,2025Q4,FICC,FICC,,,
+GS,2025Q4,Equities,Equities,,,
+GS,2025Q4,IB_Fees,Investment banking fees,,,
+GS,2026Q1,FICC,FICC,,,
+GS,2026Q1,Equities,Equities,,,
+GS,2026Q1,IB_Fees,Investment banking fees,,,
+GS,2026Q2,FICC,FICC,,,
+GS,2026Q2,Equities,Equities,,,
+GS,2026Q2,IB_Fees,Investment banking fees,,,
+GS,2026Q3,FICC,FICC,,,
+GS,2026Q3,Equities,Equities,,,
+GS,2026Q3,IB_Fees,Investment banking fees,,,
+MS,2024Q4,FICC,Fixed Income,,,
+MS,2024Q4,Equities,Equity,,,
+MS,2024Q4,IB_Fees,Investment Banking,,,VERIFY label against source
+MS,2025Q1,FICC,Fixed Income,,,
+MS,2025Q1,Equities,Equity,,,
+MS,2025Q1,IB_Fees,Investment Banking,,,VERIFY label against source
+MS,2025Q2,FICC,Fixed Income,,,
+MS,2025Q2,Equities,Equity,,,
+MS,2025Q2,IB_Fees,Investment Banking,,,VERIFY label against source
+MS,2025Q3,FICC,Fixed Income,,,
+MS,2025Q3,Equities,Equity,,,
+MS,2025Q3,IB_Fees,Investment Banking,,,VERIFY label against source
+MS,2025Q4,FICC,Fixed Income,,,
+MS,2025Q4,Equities,Equity,,,
+MS,2025Q4,IB_Fees,Investment Banking,,,VERIFY label against source
+MS,2026Q1,FICC,Fixed Income,,,
+MS,2026Q1,Equities,Equity,,,
+MS,2026Q1,IB_Fees,Investment Banking,,,VERIFY label against source
+MS,2026Q2,FICC,Fixed Income,,,
+MS,2026Q2,Equities,Equity,,,
+MS,2026Q2,IB_Fees,Investment Banking,,,VERIFY label against source
+MS,2026Q3,FICC,Fixed Income,,,
+MS,2026Q3,Equities,Equity,,,
+MS,2026Q3,IB_Fees,Investment Banking,,,VERIFY label against source
+JPM,2024Q4,FICC,Fixed Income Markets,,,
+JPM,2024Q4,Equities,Equity Markets,,,
+JPM,2024Q4,IB_Fees,Investment Banking fees,,,VERIFY label against source
+JPM,2025Q1,FICC,Fixed Income Markets,,,
+JPM,2025Q1,Equities,Equity Markets,,,
+JPM,2025Q1,IB_Fees,Investment Banking fees,,,VERIFY label against source
+JPM,2025Q2,FICC,Fixed Income Markets,,,
+JPM,2025Q2,Equities,Equity Markets,,,
+JPM,2025Q2,IB_Fees,Investment Banking fees,,,VERIFY label against source
+JPM,2025Q3,FICC,Fixed Income Markets,,,
+JPM,2025Q3,Equities,Equity Markets,,,
+JPM,2025Q3,IB_Fees,Investment Banking fees,,,VERIFY label against source
+JPM,2025Q4,FICC,Fixed Income Markets,,,
+JPM,2025Q4,Equities,Equity Markets,,,
+JPM,2025Q4,IB_Fees,Investment Banking fees,,,VERIFY label against source
+JPM,2026Q1,FICC,Fixed Income Markets,,,
+JPM,2026Q1,Equities,Equity Markets,,,
+JPM,2026Q1,IB_Fees,Investment Banking fees,,,VERIFY label against source
+JPM,2026Q2,FICC,Fixed Income Markets,,,
+JPM,2026Q2,Equities,Equity Markets,,,
+JPM,2026Q2,IB_Fees,Investment Banking fees,,,VERIFY label against source
+JPM,2026Q3,FICC,Fixed Income Markets,,,
+JPM,2026Q3,Equities,Equity Markets,,,
+JPM,2026Q3,IB_Fees,Investment Banking fees,,,VERIFY label against source
+BAC,2024Q4,FICC,"FICC (Fixed income, currencies and commodities)",,,VERIFY label against source
+BAC,2024Q4,Equities,Equities,,,VERIFY label against source
+BAC,2024Q4,IB_Fees,Total Corporation investment banking fees,,,VERIFY label against source
+BAC,2025Q1,FICC,"FICC (Fixed income, currencies and commodities)",,,VERIFY label against source
+BAC,2025Q1,Equities,Equities,,,VERIFY label against source
+BAC,2025Q1,IB_Fees,Total Corporation investment banking fees,,,VERIFY label against source
+BAC,2025Q2,FICC,"FICC (Fixed income, currencies and commodities)",,,VERIFY label against source
+BAC,2025Q2,Equities,Equities,,,VERIFY label against source
+BAC,2025Q2,IB_Fees,Total Corporation investment banking fees,,,VERIFY label against source
+BAC,2025Q3,FICC,"FICC (Fixed income, currencies and commodities)",,,VERIFY label against source
+BAC,2025Q3,Equities,Equities,,,VERIFY label against source
+BAC,2025Q3,IB_Fees,Total Corporation investment banking fees,,,VERIFY label against source
+BAC,2025Q4,FICC,"FICC (Fixed income, currencies and commodities)",,,VERIFY label against source
+BAC,2025Q4,Equities,Equities,,,VERIFY label against source
+BAC,2025Q4,IB_Fees,Total Corporation investment banking fees,,,VERIFY label against source
+BAC,2026Q1,FICC,"FICC (Fixed income, currencies and commodities)",,,VERIFY label against source
+BAC,2026Q1,Equities,Equities,,,VERIFY label against source
+BAC,2026Q1,IB_Fees,Total Corporation investment banking fees,,,VERIFY label against source
+BAC,2026Q2,FICC,"FICC (Fixed income, currencies and commodities)",,,VERIFY label against source
+BAC,2026Q2,Equities,Equities,,,VERIFY label against source
+BAC,2026Q2,IB_Fees,Total Corporation investment banking fees,,,VERIFY label against source
+BAC,2026Q3,FICC,"FICC (Fixed income, currencies and commodities)",,,VERIFY label against source
+BAC,2026Q3,Equities,Equities,,,VERIFY label against source
+BAC,2026Q3,IB_Fees,Total Corporation investment banking fees,,,VERIFY label against source
+C,2024Q4,FICC,Fixed Income Markets,,,
+C,2024Q4,Equities,Equity Markets,,,
+C,2024Q4,IB_Fees,Investment Banking fees,,,VERIFY label against source
+C,2025Q1,FICC,Fixed Income Markets,,,
+C,2025Q1,Equities,Equity Markets,,,
+C,2025Q1,IB_Fees,Investment Banking fees,,,VERIFY label against source
+C,2025Q2,FICC,Fixed Income Markets,,,
+C,2025Q2,Equities,Equity Markets,,,
+C,2025Q2,IB_Fees,Investment Banking fees,,,VERIFY label against source
+C,2025Q3,FICC,Fixed Income Markets,,,
+C,2025Q3,Equities,Equity Markets,,,
+C,2025Q3,IB_Fees,Investment Banking fees,,,VERIFY label against source
+C,2025Q4,FICC,Fixed Income Markets,,,
+C,2025Q4,Equities,Equity Markets,,,
+C,2025Q4,IB_Fees,Investment Banking fees,,,VERIFY label against source
+C,2026Q1,FICC,Fixed Income Markets,,,
+C,2026Q1,Equities,Equity Markets,,,
+C,2026Q1,IB_Fees,Investment Banking fees,,,VERIFY label against source
+C,2026Q2,FICC,Fixed Income Markets,,,
+C,2026Q2,Equities,Equity Markets,,,
+C,2026Q2,IB_Fees,Investment Banking fees,,,VERIFY label against source
+C,2026Q3,FICC,Fixed Income Markets,,,
+C,2026Q3,Equities,Equity Markets,,,
+C,2026Q3,IB_Fees,Investment Banking fees,,,VERIFY label against source

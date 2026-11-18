@@ -10,8 +10,8 @@ Usage:
     python src/make_templates.py            # writes the two *_template.csv files
 Then copy each template to peer_revenue.csv / segment_pnl.csv and fill it in.
 
-Labels marked VERIFY are my best understanding of each bank's terminology and
-must be checked against the source document while entering data.
+Labels were verified against each bank's filings (see README section 3). Re-check
+them whenever a bank reorganises its segments.
 """
 import pandas as pd
 
@@ -26,27 +26,30 @@ REPORTED_LABELS = {
         "IB_Fees": ("Investment banking fees", False),
     },
     "MS": {
-        "FICC": ("Fixed Income", False),
+        # MS lists "Fixed income"/"Equity" twice: use the sales & trading lines, not underwriting.
+        "FICC": ("Fixed income", False),
         "Equities": ("Equity", False),
-        # MS reports "Investment Banking" revenue (advisory + underwriting), not a "fees" line.
-        "IB_Fees": ("Investment Banking", True),
+        # MS reports Investment banking *revenue* (advisory + underwriting), not a "fees" line.
+        "IB_Fees": ("Investment banking", False),
     },
     "JPM": {
         "FICC": ("Fixed Income Markets", False),
         "Equities": ("Equity Markets", False),
-        "IB_Fees": ("Investment Banking fees", True),
+        # CIB income-statement line (gross), not the "Investment Banking" revenue-by-business line.
+        "IB_Fees": ("Investment banking fees", False),
     },
     "BAC": {
-        # BAC also shows sales & trading "excluding net DVA" - pick one basis and note it.
-        "FICC": ("FICC (Fixed income, currencies and commodities)", True),
-        "Equities": ("Equities", True),
-        # Total Corporation IB fees; split between Global Banking and Global Markets.
-        "IB_Fees": ("Total Corporation investment banking fees", True),
+        # Reported basis incl. net DVA (BAC also shows an ex-DVA, non-GAAP figure).
+        "FICC": ("FICC (Fixed income, currencies and commodities)", False),
+        "Equities": ("Equities", False),
+        # Total Corporation IB fees including self-led deals (gross); split across two segments.
+        "IB_Fees": ("Total Corporation investment banking fees", False),
     },
     "C": {
         "FICC": ("Fixed Income Markets", False),
         "Equities": ("Equity Markets", False),
-        "IB_Fees": ("Investment Banking fees", True),
+        # Banking segment fee line; not the broader "Investment banking revenues" used from 2Q26.
+        "IB_Fees": ("Investment banking fees", False),
     },
 }
 
@@ -58,7 +61,7 @@ SEGMENTS = {
     "MS": [("Institutional Securities", False)],
     "JPM": [("Commercial & Investment Bank", False)],
     "BAC": [("Global Banking", False), ("Global Markets", False)],
-    "C": [("Banking", True), ("Markets", False)],
+    "C": [("Banking", False), ("Markets", False)],
 }
 
 REVENUE_COLUMNS = [

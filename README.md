@@ -6,9 +6,10 @@ across **FICC, Equities and Investment Banking fees** over the last 8 reported q
 It covers each bank's markets/banking segment P&L, tests how much market volatility explains
 trading revenue, and produces an Excel report and Tableau-ready data that serve as a single source of truth.
 
-> **Data integrity rule:** every bank figure in this project is entered by hand from the bank's official
-> earnings release or financial supplement, with its source URL. The code never invents, estimates
-> or fills a value. If something is missing, the pipeline stops and tells you exactly which row.
+> **Data integrity rule:** every bank figure is a **reported** number read from the bank's own SEC filings
+> (earnings-release financial supplements, 10-Qs, recast 8-Ks), stored with the exact source URL and the table it
+> came from. Nothing is estimated, interpolated or back-calculated. If a value isn't disclosed, it stays blank and the
+> pipeline flags it.
 
 ---
 
@@ -42,50 +43,69 @@ A GBM Finance & Strategy team needs to answer, every quarter:
 
 ## 2. Data sources
 
-| Data | Source | How it enters the project |
-|------|--------|---------------------------|
-| FICC, Equities, IB fees revenue | Each bank's quarterly **earnings release** and **financial supplement** (investor relations sites) | Hand-entered into `data/raw/peer_revenue.csv` |
-| Segment net revenue, operating expenses, pre-tax income, ROE | Same documents, segment pages | Hand-entered into `data/raw/segment_pnl.csv` |
-| VIX | FRED series [`VIXCLS`](https://fred.stlouisfed.org/series/VIXCLS) (CBOE Volatility Index, daily close) | Downloaded as CSV to `data/raw/vix.csv`, averaged to calendar quarters |
+| Data | Source | File |
+|------|--------|------|
+| FICC, Equities, IB fees revenue | Each bank's quarterly **financial supplement** / 10-Q / recast 8-K, filed on [SEC EDGAR](https://www.sec.gov/edgar/search/) | `data/raw/peer_revenue.csv` (120 rows) |
+| Segment net revenue, operating expenses, pre-tax income, ROE | Same filings, segment results pages | `data/raw/segment_pnl.csv` (56 rows) |
+| VIX | FRED series [`VIXCLS`](https://fred.stlouisfed.org/series/VIXCLS) (Cboe Volatility Index, daily close) | `data/raw/vix.csv`, averaged to calendar quarters |
 
-Every row carries a `source_url`. A row without one fails validation. The Excel **Data Sources** sheet lists all of them.
+**Documents used** (all filed on SEC EDGAR, 8-K exhibits unless noted):
 
-All figures are in **USD millions**, as reported, for the quarter (not year-to-date). `reported_roe_pct` is entered as
-a percent number (e.g. `14.2` for 14.2%).
+| Bank | Documents | Basis |
+|---|---|---|
+| GS | Segment-recast 8-K (Jan 2026), 4Q25 earnings presentation, 1Q26–3Q26 Form 10-Qs | All quarters on the post-4Q25 segment definition |
+| MS | 4Q25, 1Q26, 2Q26, 3Q26 Financial Supplements | GAAP |
+| JPM | 4Q25, 1Q26, 2Q26, 3Q26 Earnings Release Financial Supplements | Managed basis; prior periods as revised by JPM |
+| BAC | Q4 2025, Q1–Q3 2026 Supplemental Information | Segment results on FTE basis |
+| C | 4Q25 Historical (recast) supplement, 1Q26, 2Q26, 3Q26 Quarterly Financial Data Supplements | Recast for Citi's 1Q26 segment changes |
+
+For each quarter the **most recent filing that shows it** is used, so restated figures are applied consistently.
+Overlapping quarters were cross-checked across filings and agree. Every row carries its `source_url`, and the `notes`
+column names the document and table. The Excel **Data Sources** sheet lists all of them.
+
+All figures are in **USD millions**, for the quarter (not year-to-date). `reported_roe_pct` is a percent number
+(e.g. `20.7` = 20.7%).
 
 ## 3. How each bank reports (label & segment mapping)
 
-The five banks don't use the same names, so the templates pre-fill each bank's own label (`reported_label`) next to the
-standard `business_line`. Items marked **VERIFY** are my best reading of each bank's terminology and should be
-confirmed against the source document while entering data. The template's `notes` column flags the same rows.
+The five banks use different names for the same businesses, so each row keeps the bank's own label
+(`reported_label`) next to a standard `business_line`. The original **VERIFY** items were resolved against the filings:
 
 ### Business-line labels
 
 | Standard line | GS | MS | JPM | BAC | C |
 |---|---|---|---|---|---|
-| **FICC** | FICC | Fixed Income | Fixed Income Markets | FICC (Fixed income, currencies and commodities) **VERIFY**: reported and ex-DVA versions both exist | Fixed Income Markets |
-| **Equities** | Equities | Equity | Equity Markets | Equities **VERIFY**: same DVA choice | Equity Markets |
-| **IB_Fees** | Investment banking fees | Investment Banking **VERIFY**: reported as revenue (advisory + underwriting), not a "fees" line | Investment Banking fees **VERIFY**: CIB vs. firmwide figure | Total Corporation investment banking fees **VERIFY**: split between Global Banking and Global Markets | Investment Banking fees **VERIFY**: Banking segment line |
+| **FICC** | FICC | Fixed income (sales & trading) | Fixed Income Markets | FICC sales & trading, **reported basis incl. net DVA** (ex-DVA in notes) | Fixed Income Markets |
+| **Equities** | Equities | Equity (sales & trading) | Equity Markets | Equities sales & trading, reported basis | Equity Markets |
+| **IB_Fees** | Investment banking fees | Investment banking *revenue* (advisory + underwriting) | Investment banking fees (CIB income-statement line, gross) | Total Corporation IB fees **incl. self-led deals** (gross; net in notes) | Investment banking fees (Banking segment fee line) |
+
+Choices worth knowing:
+- **MS** lists "Equity" and "Fixed income" twice: once as underwriting inside Investment banking, once as sales & trading.
+  The sales & trading lines are used.
+- **JPM** also shows an "Investment Banking" revenue line under *Revenue by Business*. That is a different measure;
+  the gross IB fees line is used, and the other value is in the notes.
+- **Citi** introduced a broader "Investment banking revenues" headline from 2Q26. The narrower "Investment banking
+  fees" line is used for all 8 quarters for consistency.
 
 ### Segments used for the P&L
 
 | Bank | Segment(s) | Notes |
 |---|---|---|
-| GS | Global Banking & Markets | Single segment covering IB, FICC, Equities |
+| GS | Global Banking & Markets | Recast from 4Q25: transaction banking moved into GBM |
 | MS | Institutional Securities | Single segment |
-| JPM | Commercial & Investment Bank | Single segment since the 2024 reorganisation (includes former Commercial Banking) |
+| JPM | Commercial & Investment Bank | Includes the former Commercial Banking (2024 reorganisation) |
 | BAC | Global Banking **+** Global Markets | Two segments, **summed** by the pipeline |
-| C | Banking **VERIFY** **+** Markets | Two segments, **summed**. Citi's Services segment is excluded |
+| C | Banking **+** Markets | Two segments, **summed**. Services excluded. Recast in 1Q26 |
 
-### Segment ROE availability (VERIFY all)
+### Segment ROE
 
-| Bank | What is reported | How the pipeline treats it |
+| Bank | What is reported | Used as `reported_roe_pct` |
 |---|---|---|
-| GS | Return on average equity for GBM | Entered as `reported_roe_pct` |
-| MS | Firm-level ROE / ROTCE; segment ROE may not be disclosed **VERIFY** | Leave blank if not reported |
-| JPM | ROE for CIB | Entered as `reported_roe_pct` |
-| BAC | Return on average *allocated capital* per segment **VERIFY** | Blanked automatically (two segments can't be combined) |
-| C | RoTCE per segment **VERIFY** | Blanked automatically (two segments can't be combined) |
+| GS | Return on average common equity for GBM (one decimal) | Yes. 2024Q4 is blank because the recast filing doesn't state it |
+| MS | Return on average common equity for ISG (whole %) | Yes |
+| JPM | ROE for CIB (whole %) | Yes |
+| BAC | Return on average *allocated capital* per segment | No. Kept in notes; two segments can't be combined anyway |
+| C | RoTCE per segment | No. Two segments can't be combined anyway |
 
 ## 4. Segment comparability caveats
 
@@ -190,16 +210,7 @@ pip install -r requirements.txt
 # 2. Check the code (uses synthetic test data only)
 python -m pytest
 
-# 3. Create the input files from the blank templates
-cp data/raw/peer_revenue_template.csv data/raw/peer_revenue.csv
-cp data/raw/segment_pnl_template.csv  data/raw/segment_pnl.csv
-#    -> fill in every figure + source_url from the banks' earnings materials
-
-# 4. Download VIX: https://fred.stlouisfed.org/series/VIXCLS
-#    set the date range to cover 2024-10-01 .. 2026-09-30, Download -> CSV,
-#    save as data/raw/vix.csv
-
-# 5. Run everything
+# 3. Run everything on the sourced data in data/raw/
 python src/main.py
 ```
 
@@ -207,8 +218,12 @@ python src/main.py
 If an input is missing or a critical check fails, it prints exactly which rows to fix and exits with code 1. No
 output is produced from incomplete data.
 
-**Rolling forward a quarter:** change `LATEST_QUARTER` in `src/config.py` and run `python src/make_templates.py`
-to regenerate the templates.
+**Rolling forward a quarter:**
+1. Set `LATEST_QUARTER` in `src/config.py`.
+2. Run `python src/make_templates.py` to regenerate blank templates for the new window.
+3. Add the new quarter's rows from the latest filings, with source URLs.
+4. Refresh `data/raw/vix.csv` from FRED (Download → CSV; the full series is fine, and the loader keeps only the
+   quarters it needs).
 
 ## 7. Outputs
 
@@ -246,50 +261,71 @@ business line; efficiency ratio by bank; and the forecast scenario bars, with a 
 
 ### Charts: `outputs/charts/`
 
-| File | Shows |
-|---|---|
-| `peer_set_market_share.png` | Peer-set share over time, one panel per business line |
-| `revenue_mix_latest_quarter.png` | 100% stacked revenue mix by bank, latest quarter |
-| `efficiency_ratio.png` | Segment efficiency ratio by bank over time |
-| `forecast_scenarios.png` | FY trading revenue by bank under each VIX scenario |
-
-<!-- After running the pipeline with real data, embed the charts here, e.g.
 ![Peer-set market share](outputs/charts/peer_set_market_share.png)
--->
+
+![Revenue mix](outputs/charts/revenue_mix_latest_quarter.png)
+
+![Efficiency ratio](outputs/charts/efficiency_ratio.png)
+
+![Forecast scenarios](outputs/charts/forecast_scenarios.png)
 
 ## 8. Key findings
 
-_To be completed once all figures have been entered and validated. Replace every [bracket]._
+_Latest quarter 2026Q3 unless stated. "Share" = share of the 5-bank peer set._
 
 **Market share**
-- FICC: [Bank] led peer-set share in [latest quarter] at [x]%, [up / down] [x] bps YoY, driven by [driver].
-- Equities: [...]
-- IB fees: [...]
+- **FICC:** JPM leads with **30.1%** peer-set share, roughly flat YoY (−4 bps). Citi gained the most (**+192 bps** to
+  24.6%) and BAC lost the most (**−222 bps** to 14.4%, revenue −17% YoY). The peer FICC pool shrank **4.3%** YoY.
+- **Equities:** the peer pool grew **43%** YoY, the standout trend of the period. GS led with **30.1%** share
+  (**+510 bps**, revenue +72% YoY). MS was second at 27.1% (−43 bps). BAC (−345 bps) and Citi (−209 bps) lost ground.
+- **IB fees:** GS led with **28.2%** (+317 bps) ahead of JPM at 26.3% (+154 bps). BAC was the only bank with lower IB
+  fees YoY (−11%, −339 bps share).
 
 **Segment profitability**
-- Lowest efficiency ratio (trailing 4Q): [Bank] at [x]% vs. peer median [x]%.
-- Positive operating leverage at [n] of 5 banks. [Bank] had the widest jaws at [+x] pts.
+- **Efficiency ratio (trailing 4Q):** JPM is lowest at **46.8%**, then GS at 54.0%, against a peer median of 58.0%.
+  JPM's CIB includes lending and payments, so part of that gap is business mix (see Section 4).
+- **Operating leverage (trailing 4Q):** positive at 4 of 5 banks. GS had the widest jaws (revenue +31.8% vs. expenses
+  ~+25%). BAC was the only bank with negative operating leverage (−1.4 pts), and in 2026Q3 its expenses grew 7% while
+  revenue fell 3%.
+- **ROE (trailing 4Q average, where reported):** MS 22.3%, GS 21.8%, JPM 20.0%.
+- **KPI scorecard:** GS ranks #1 and JPM #2 on both the latest-quarter and trailing-4Q views.
 
 **Volatility sensitivity**
-- β = [$x]mm per VIX point per bank-quarter (p = [x]). [Interpretation, and why it should be read cautiously.]
+- β ≈ **$63mm** of quarterly trading revenue per bank per VIX point, but the effect is **not statistically
+  significant** (p = 0.37; 95% CI −$75mm to +$200mm). In this window volatility was not the main driver of trading
+  results. 2026Q2 was the strongest trading quarter for most banks with an unremarkable average VIX of 18.3, while the
+  2025Q2 VIX spike (23.6) did not produce the peak. Client activity and equities financing balances matter more than
+  headline volatility.
 
 **Outlook (illustrative)**
-- Base-case FY[year] trading revenue for the peer set: [$x]bn. A ±5-pt VIX swing moves that by ±[$x]bn.
+- Base case FY2027 peer-set trading revenue: **$159.4bn**. That equals the trailing 4-quarter run-rate, because Base VIX
+  is set to the trailing average of 18.1. A ±5-point VIX swing moves each bank by about ±$1.3bn (±$6.3bn for the peer
+  set), but given the weak regression fit this sensitivity should be treated as a range, not a forecast.
 
 **So what for GBM leadership**
-- [One or two data-driven recommendations, e.g. where share gains are concentrated and whether cost growth is
-  keeping pace with revenue.]
+- The equities wallet is where share is being won and lost. GS and JPM are compounding gains in both Equities and IB
+  fees, while BAC is losing share across all three lines with rising costs. Strategic focus belongs on financing-led
+  equities and advisory, not on betting on volatility.
+- Cost discipline separates the leaders. The banks that grew revenue fastest also kept expense growth below revenue
+  growth, so efficiency targets should be tracked alongside share, not separately.
+
+_These findings are drafted from the pipeline outputs. Re-check them against the Excel report after any data change._
 
 ## 9. Limitations
 
 - **Small sample.** 8 quarters × 5 banks. The regression and forecast are directional tools, not predictive models.
 - **One driver.** Trading revenue depends on rates and FX volatility, client positioning, financing balances,
-  prime brokerage and market share, none of which the VIX model captures.
+  prime brokerage and market share, none of which the VIX model captures. The weak fit (p = 0.37) shows this.
 - **Comparability.** Segment scope and line definitions differ by bank (Section 4). Treat cross-bank efficiency and
   ROE comparisons as indicative.
+- **Restatements.** GS (4Q25) and Citi (1Q26) recast their segments, and JPM revised some line allocations. Recast
+  figures are used throughout, so earlier quarters won't match the numbers as first published.
+- **Preliminary figures.** Supplement figures for the latest quarter are labelled preliminary by the banks and can be
+  revised in the 10-Q.
 - **Peer-set share** is not industry wallet share. Coalition Greenwich or Dealogic data would be needed for that.
-- **Manual entry risk** is mitigated by source URLs, completeness checks, reconciliation and QoQ outlier flags. It is
-  not eliminated, so a second-person review of the inputs is still recommended.
+- **Data extraction risk** is mitigated by source URLs, completeness checks, reconciliation, QoQ outlier flags and an
+  independent spot-check (Section 12). Anyone presenting these numbers should still re-verify the key figures against
+  the filings.
 - **Calendar quarters** are assumed for VIX alignment. All five banks report on a calendar fiscal year.
 
 ## 10. Project structure
@@ -300,9 +336,9 @@ gbm-peer-benchmarking/
 │   ├── raw/
 │   │   ├── peer_revenue_template.csv   # blank template, 120 rows (5 banks × 8 quarters × 3 lines)
 │   │   ├── segment_pnl_template.csv    # blank template, 56 rows (BAC & C have two segments)
-│   │   ├── peer_revenue.csv            # <- you create & fill
-│   │   ├── segment_pnl.csv             # <- you create & fill
-│   │   └── vix.csv                     # <- downloaded from FRED
+│   │   ├── peer_revenue.csv            # sourced revenue figures (120 rows)
+│   │   ├── segment_pnl.csv             # sourced segment P&L (56 rows)
+│   │   └── vix.csv                     # FRED VIXCLS daily series
 │   └── processed/                      # Tableau extracts (generated)
 ├── outputs/
 │   ├── gbm_peer_benchmarking.xlsx      # Excel report (generated)
@@ -346,27 +382,34 @@ Choices worth explaining:
 ## 12. How AI was used in this project
 
 This project was built with AI-assisted development, using **Claude Code** as a pair programmer in my local
-development environment (with Git for version control). I used it the way the Finance & Strategy role describes: to
-speed up the mechanical work while keeping the financial judgment and data accountability with me.
+development environment (with Git for version control). The approach follows what the Finance & Strategy role
+describes: use AI to remove manual effort, and keep human judgment and review where accuracy matters.
 
 **Where AI accelerated the work**
-- *Scaffolding:* the folder structure, module skeletons and the one-command `main.py` runner.
-- *Boilerplate-heavy code:* openpyxl formatting (number formats, frozen panes, column widths) and matplotlib styling,
-  which are slow to write by hand and easy to review.
-- *Test generation:* drafting pytest cases from the formulas I specified (share sums to 100%, YoY by hand, operating
-  leverage, forecast arithmetic). I then checked each expected value by hand.
-- *Edge cases:* prompting for failure modes in validation (gaps in quarters, non-numeric entries, FRED's `.`
-  missing-value marker, multi-segment banks), which became explicit checks and tests.
-- *Documentation:* first drafts of docstrings and this README, edited for accuracy.
+- **Scaffolding:** the folder structure, module skeletons and the one-command `main.py` runner.
+- **Boilerplate-heavy code:** openpyxl formatting (number formats, frozen panes, column widths) and matplotlib styling.
+- **Test generation:** pytest cases drafted from formulas I specified (share sums to 100%, YoY by hand, operating
+  leverage, forecast arithmetic), each with hand-checkable expected values.
+- **Edge cases:** failure modes in validation such as gaps in quarters, non-numeric entries, FRED's missing-value
+  marker and multi-segment banks. Each became an explicit check and test.
+- **Document extraction:** AI agents searched SEC EDGAR for each bank's financial supplements and 10-Qs, read the
+  segment tables, and returned every figure with its source URL and the exact table line it came from. This is the
+  "automate the reporting workflow" use case: about 30 long filings reduced to two tidy CSVs.
 
-**Where human review was essential (and AI was deliberately not used)**
-- *All financial data.* Every figure was sourced manually from official earnings releases and supplements. The AI was
-  explicitly told not to supply or estimate any bank numbers, and the pipeline is built to reject anything unsourced.
-- *Label and segment mapping.* AI-suggested mappings were treated as hypotheses and marked **VERIFY** until checked
-  against each bank's own documents.
-- *Methodology choices:* peer-set vs. industry share, summing two-segment banks, blanking non-additive ROE, fixed
-  effects, and the decision to present the forecast as illustrative.
-- *Interpreting results:* the regression's small-sample caveats and the Key Findings are my own analysis.
+**Controls on the AI-extracted data (where human review stays essential)**
+- **Rules set up front:** read only from the bank's own filings; never estimate, interpolate or recall from memory;
+  leave a figure blank if it isn't disclosed. One figure (GS 2024Q4 segment ROE) is blank for that reason.
+- **Restatement handling:** the most recent filing containing each quarter is used. This surfaced the GS and Citi
+  segment recasts, which would otherwise have mixed old and new definitions.
+- **Automated validation:** completeness, duplicates, negatives, source URLs, the pre-tax reconciliation and QoQ
+  outlier flags. Every flag was reviewed and explained, e.g. Q4→Q1 trading seasonality and Citi Banking credit-cost
+  swings.
+- **Independent audit:** a separate checker, not told the expected answer, re-opened the filings and re-read a sample
+  of 16 figures across all five banks, including the flagged outliers: **16 of 16 matched exactly**. The audit also confirmed the right line was picked where similar figures sit side by side, e.g. BAC FICC reported (3,479) vs. ex-DVA (3,464), and JPM gross IB fees (3,005) vs. IB revenue (3,098).
+- **Judgment calls stayed mine:** which line to use when a bank reports several (gross vs. net IB fees, reported vs.
+  ex-DVA trading), segment comparability, summing two-segment banks, blanking non-additive ROE, and how to interpret
+  results.
 
-**What I took away:** AI is very effective for structure, formatting and test coverage. It is not a source of truth for
-financial data or for judgment calls about comparability. Those stay with the analyst.
+**What I took away:** AI is very effective at structure, formatting, test coverage and turning long filings into
+structured data. It is only trustworthy when every number is traceable to a source and checked by controls a human
+designed. The analyst stays accountable for the numbers.

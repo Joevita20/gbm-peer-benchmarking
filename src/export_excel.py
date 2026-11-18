@@ -1,5 +1,5 @@
 """
-Build the formatted Excel report: outputs/gbm_peer_benchmarking.xlsx
+Build the formatted Excel report: outputs/ib_trading_peer_benchmarking.xlsx
 
 Sheets: Executive Summary, Market Share, YoY Growth, Revenue Mix, Segment P&L,
 KPI Scorecard, Forecast Scenarios, Assumptions, Data Sources.
@@ -168,7 +168,7 @@ def build_workbook(revenue, pnl, bench, kpis, scorecard, reg, forecast, assumpti
     # 1. Executive Summary
     ws = wb.active
     ws.title = "Executive Summary"
-    r = add_title(ws, f"GBM Peer Benchmarking - Executive Summary ({latest})",
+    r = add_title(ws, f"Investment Banking & Trading Peer Benchmarking - Executive Summary ({latest})",
                   "Peer set: GS, MS, JPM, BAC, C. Share = share of this 5-bank peer set, not total industry. "
                   "Segments are not perfectly comparable across banks (see README).")
     r = write_table(ws, executive_summary(bench, kpis, scorecard, reg, forecast), r)

@@ -1,5 +1,5 @@
 """
-Central configuration for the GBM peer benchmarking project.
+Central configuration for the investment banking & trading peer benchmarking project.
 
 Everything that is a "choice" (which banks, which quarters, file locations,
 validation thresholds) lives here, so the analysis modules contain only logic.
@@ -24,7 +24,7 @@ REVENUE_FILE = RAW_DIR / "peer_revenue.csv"
 PNL_FILE = RAW_DIR / "segment_pnl.csv"
 VIX_FILE = RAW_DIR / "vix.csv"  # FRED series VIXCLS, daily
 
-EXCEL_REPORT = OUTPUTS_DIR / "gbm_peer_benchmarking.xlsx"
+EXCEL_REPORT = OUTPUTS_DIR / "ib_trading_peer_benchmarking.xlsx"
 
 # ---------------------------------------------------------------------------
 # Peer set and time window

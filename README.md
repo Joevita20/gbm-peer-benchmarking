@@ -1,4 +1,4 @@
-# GBM Peer Benchmarking: Trading, Investment Banking & Segment P&L
+# Investment Banking & Trading Peer Benchmarking
 
 A small, end-to-end finance analytics pipeline that benchmarks five U.S. bulge-bracket banks
 — **Goldman Sachs (GS), Morgan Stanley (MS), JPMorgan Chase (JPM), Bank of America (BAC) and Citigroup (C)** —
@@ -31,7 +31,7 @@ trading revenue, and produces an Excel report and Tableau-ready data that serve 
 
 ## 1. Business questions
 
-A GBM Finance & Strategy team needs to answer, every quarter:
+A markets-division Finance & Strategy team needs to answer, every quarter:
 
 | # | Question | Where it's answered |
 |---|----------|---------------------|
@@ -227,7 +227,7 @@ output is produced from incomplete data.
 
 ## 7. Outputs
 
-### Excel report: `outputs/gbm_peer_benchmarking.xlsx`
+### Excel report: `outputs/ib_trading_peer_benchmarking.xlsx`
 
 | Sheet | Contents |
 |---|---|
@@ -302,7 +302,7 @@ _Latest quarter 2026Q3 unless stated. "Share" = share of the 5-bank peer set._
   is set to the trailing average of 18.1. A ±5-point VIX swing moves each bank by about ±$1.3bn (±$6.3bn for the peer
   set), but given the weak regression fit this sensitivity should be treated as a range, not a forecast.
 
-**So what for GBM leadership**
+**So what for markets leadership**
 - The equities wallet is where share is being won and lost. GS and JPM are compounding gains in both Equities and IB
   fees, while BAC is losing share across all three lines with rising costs. Strategic focus belongs on financing-led
   equities and advisory, not on betting on volatility.
@@ -331,7 +331,7 @@ _These findings are drafted from the pipeline outputs. Re-check them against the
 ## 10. Project structure
 
 ```
-gbm-peer-benchmarking/
+ib-trading-peer-benchmarking/
 ├── data/
 │   ├── raw/
 │   │   ├── peer_revenue_template.csv   # blank template, 120 rows (5 banks × 8 quarters × 3 lines)
@@ -341,7 +341,7 @@ gbm-peer-benchmarking/
 │   │   └── vix.csv                     # FRED VIXCLS daily series
 │   └── processed/                      # Tableau extracts (generated)
 ├── outputs/
-│   ├── gbm_peer_benchmarking.xlsx      # Excel report (generated)
+│   ├── ib_trading_peer_benchmarking.xlsx  # Excel report (generated)
 │   └── charts/                         # PNG charts (generated)
 ├── src/
 │   ├── config.py           # banks, quarters, paths, validation thresholds
